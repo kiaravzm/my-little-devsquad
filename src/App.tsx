@@ -1,11 +1,10 @@
-import './App.css'
-import { RegistrationPage } from './features/registration/components/RegistrationPage'
+import { Providers } from './app/providers'
+import { AppRoutes } from './app/routes'
 
-function App() {
-
+export function App() {
   return (
-    <RegistrationPage />
+    <Providers>
+      <AppRoutes />
+    </Providers>
   )
 }
-
-export default App
