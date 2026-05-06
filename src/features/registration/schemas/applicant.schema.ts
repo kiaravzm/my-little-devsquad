@@ -18,6 +18,7 @@ export const applicantFormSchema = z.object({
 })
 
 export type ApplicantFormData = z.infer<typeof applicantFormSchema>
+export type PartialApplicant = Partial<ApplicantFormData>
 
 export type Area = z.infer<typeof areaSchema>
 export type Availability = z.infer<typeof availabilitySchema>
