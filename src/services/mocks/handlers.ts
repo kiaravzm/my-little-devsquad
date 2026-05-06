@@ -3,10 +3,8 @@ import { applicantFormSchema } from '@/features/registration/schemas/applicant.s
 import type { Applicant } from '@/features/registration/types'
 
 /** Sobrescreve o POST com 500: `server.use(applicantsPostInternalErrorHandler)` */
-export const applicantsPostInternalErrorHandler = http.post(
-  '/api/applicants',
-  () =>
-    HttpResponse.json({ message: 'Erro interno do servidor' }, { status: 500 })
+export const applicantsPostInternalErrorHandler = http.post('/api/applicants', () =>
+  HttpResponse.json({ message: 'Erro interno do servidor' }, { status: 500 }),
 )
 
 export const handlers = [
@@ -18,7 +16,7 @@ export const handlers = [
     if (!parsed.success) {
       return HttpResponse.json(
         { message: 'Dados inválidos', issues: parsed.error.flatten() },
-        { status: 422 }
+        { status: 422 },
       )
     }
 

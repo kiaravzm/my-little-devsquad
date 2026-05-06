@@ -3,13 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { RegistrationPage } from '../components/RegistrationPage'
 
 describe('RegistrationPage', () => {
-
   it('renders the first step heading', () => {
     render(<RegistrationPage />)
 
     // busca pelo que o usuário VÊ — não por className ou id interno
     expect(
-      screen.getByRole('heading', { name: /junte-se ao my little devsquad/i })
+      screen.getByRole('heading', { name: /junte-se ao my little devsquad/i }),
     ).toBeInTheDocument()
   })
 
@@ -41,14 +40,11 @@ describe('RegistrationPage', () => {
   it('shows error message when submitting without a name', async () => {
     const user = userEvent.setup()
     render(<RegistrationPage />)
-  
+
     // usuário clica em próximo sem preencher nada
     await user.click(screen.getByRole('button', { name: /próximo/i }))
-  
-    // deve aparecer uma mensagem de erro
-    expect(
-      screen.getByText(/nome é obrigatório/i)
-    ).toBeInTheDocument()
-  })
 
+    // deve aparecer uma mensagem de erro
+    expect(screen.getByText(/nome é obrigatório/i)).toBeInTheDocument()
+  })
 })

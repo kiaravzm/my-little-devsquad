@@ -16,11 +16,11 @@ export function createClient(request: Request) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
-            headers.append('Set-Cookie', serializeCookieHeader(name, value, options))
+            headers.append('Set-Cookie', serializeCookieHeader(name, value, options)),
           )
         },
       },
-    }
+    },
   )
 
   return { supabase, headers }
