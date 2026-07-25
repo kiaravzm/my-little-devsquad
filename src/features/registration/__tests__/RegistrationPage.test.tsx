@@ -1,10 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RegistrationPage } from '../components/RegistrationPage'
+import { renderWithProviders } from '../../../test/utils'
 
 describe('RegistrationPage', () => {
   it('renders the first step heading', () => {
-    render(<RegistrationPage />)
+    renderWithProviders(<RegistrationPage />)
 
     // busca pelo que o usuário VÊ — não por className ou id interno
     expect(
@@ -13,13 +14,13 @@ describe('RegistrationPage', () => {
   })
 
   it('shows step indicator on first step', () => {
-    render(<RegistrationPage />)
+    renderWithProviders(<RegistrationPage />)
 
     expect(screen.getByText(/passo 1 de 3/i)).toBeInTheDocument()
   })
 
   it('has a name input and a next button', () => {
-    render(<RegistrationPage />)
+    renderWithProviders(<RegistrationPage />)
 
     // getByLabelText vincula o input ao label — testa acessibilidade junto
     expect(screen.getByLabelText(/seu nome/i)).toBeInTheDocument()
@@ -28,7 +29,7 @@ describe('RegistrationPage', () => {
 
   it('lets the user type in the name field', async () => {
     const user = userEvent.setup()
-    render(<RegistrationPage />)
+    renderWithProviders(<RegistrationPage />)
 
     const input = screen.getByLabelText(/seu nome/i)
     await user.type(input, 'Ana')
@@ -39,7 +40,7 @@ describe('RegistrationPage', () => {
 
   it('shows error message when submitting without a name', async () => {
     const user = userEvent.setup()
-    render(<RegistrationPage />)
+    renderWithProviders(<RegistrationPage />)
 
     // usuário clica em próximo sem preencher nada
     await user.click(screen.getByRole('button', { name: /próximo/i }))
