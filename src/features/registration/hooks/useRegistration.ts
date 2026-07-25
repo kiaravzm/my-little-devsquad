@@ -170,5 +170,13 @@ export const useRegistration = () => {
     },
   })
 
-  return { formState, handleChange, handleNextStep, handlePrevStep, handleReset, handleSubmit }
+  return {
+    formState,
+    totalSteps: MAX_STEP,
+    handleChange,
+    handleNextStep,
+    handlePrevStep,
+    handleReset,
+    handleSubmit,
+  }
 }
