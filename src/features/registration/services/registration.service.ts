@@ -1,16 +1,28 @@
 import type { ApplicantFormData } from '../types'
 import type { ApiResponse } from '@/shared/types/common'
+import { createClient } from '@/lib/supabase/client'
 
+const supabase = createClient()
 export const saveApplicant = async (
-  data: ApplicantFormData,
+  formData: ApplicantFormData,
 ): Promise<ApiResponse<ApplicantFormData & { id: string }>> => {
   try {
-    const response = await fetch('/api/applicants', {
-      method: 'POST',
-      body: JSON.stringify(data),
+    const { data, error } = await supabase.from('applicants').insert({
+      name: formData.name,
+      github: formData.gitHub,
+      experience_level: formData.experienceLevel,
+      area: formData.area,
+      availability: formData.availability,
+      current_skills: formData.currentSkills,
+      desired_skills: formData.desiredSkills,
+      notes: formData.notes,
     })
-    return response.json()
+
+    if (error) throw error
+    return { data, error: null }
   } catch (error) {
-    return { data: null, error: 'Error saving applicant: ' + (error as Error).message }
+    throw new Error('Error saving applicant: ' + (error as Error).message, {
+      cause: error,
+    })
   }
 }

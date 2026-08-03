@@ -3,20 +3,22 @@ const Actions = ({
   onPrevStep,
   onNextStep,
   onReset,
-  onSubmit,
+
   currentStep,
   totalSteps,
 }: {
   onPrevStep: () => void
   onNextStep: () => void
   onReset: () => void
-  onSubmit: () => void
+
   currentStep: number
   totalSteps: number
 }) => {
   return (
     <div className="flex justify-between">
-      <Button onClick={onReset}>Resetar</Button>
+      <Button onClick={onReset} type="button">
+        Resetar
+      </Button>
       {currentStep > 1 && (
         <Button type="button" onClick={onPrevStep}>
           Voltar
@@ -28,7 +30,7 @@ const Actions = ({
         </Button>
       )}
       {currentStep === totalSteps && (
-        <Button onClick={onSubmit} type="button">
+        <Button type="submit" form="form-rhf-demo">
           Enviar
         </Button>
       )}

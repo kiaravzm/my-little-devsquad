@@ -1,7 +1,11 @@
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Controller } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
-import { areaSchema, type ApplicantFormData } from '../schemas/applicant.schema'
+import {
+  areaSchema,
+  experienceLevelSchema,
+  type ApplicantFormData,
+} from '../schemas/applicant.schema'
 import {
   Select,
   SelectContent,
@@ -23,6 +27,11 @@ export const StepTwo = ({
   const areaOptions = areaSchema.options.map((area) => ({
     value: area,
     label: area,
+  }))
+
+  const experienceLevelOptions = experienceLevelSchema.options.map((experienceLevel) => ({
+    value: experienceLevel,
+    label: experienceLevel,
   }))
 
   return (
@@ -48,6 +57,35 @@ export const StepTwo = ({
                 {areaOptions.map((area) => (
                   <SelectItem key={area.value} value={area.value}>
                     {area.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Controller
+        name="experienceLevel"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="registration-form-experienceLevel">
+              Qual seu nível de experiência?
+            </FieldLabel>
+            <Select name={field.name} value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger
+                id="form-rhf-select-language"
+                aria-invalid={fieldState.invalid}
+                className="min-w-[120px]"
+              >
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent position="item-aligned">
+                <SelectSeparator />
+                {experienceLevelOptions.map((experienceLevel) => (
+                  <SelectItem key={experienceLevel.value} value={experienceLevel.value}>
+                    {experienceLevel.label}
                   </SelectItem>
                 ))}
               </SelectContent>

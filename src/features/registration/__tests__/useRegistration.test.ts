@@ -17,6 +17,8 @@ type HookResult = RenderHookResult<ReturnType<typeof useRegistration>, unknown>
 const validFormValues: ApplicantFormData = {
   name: 'John Doe',
   area: 'frontend',
+  experienceLevel: 'beginner',
+  gitHub: 'https://github.com/john-doe',
   availability: '1-5h',
   currentSkills: ['React'],
   desiredSkills: ['React Native'],
@@ -87,7 +89,7 @@ describe('useRegistration', () => {
     act(() => hook.result.current.handleNextStep())
     act(() => hook.result.current.handleReset())
     expect(hook.result.current.formState.step).toBe(1)
-    expect(hook.result.current.formState.formData).toEqual({})
+    expect(hook.result.current.formState).toEqual({})
     expect(hook.result.current.formState.isLoading).toBe(false)
     expect(hook.result.current.formState.isError).toBe(false)
     expect(hook.result.current.formState.error).toBe(null)
@@ -97,9 +99,9 @@ describe('useRegistration', () => {
   it('persists form data when navigating between steps', () => {
     act(() => hook.result.current.handleChange('name', 'Maria'))
     act(() => hook.result.current.handleNextStep())
-    expect(hook.result.current.formState.formData.name).toBe('Maria')
+    expect(hook.result.current.formState).toBe('Maria')
     act(() => hook.result.current.handlePrevStep())
-    expect(hook.result.current.formState.formData.name).toBe('Maria')
+    expect(hook.result.current.formState).toEqual({ ...validFormValues, name: 'Maria' })
   })
 
   it('submits successfully when validation passes and saveApplicant resolves', async () => {
@@ -111,7 +113,7 @@ describe('useRegistration', () => {
     fillValidThreeStepForm(hook.result)
 
     await act(async () => {
-      await hook.result.current.handleSubmit()
+      await hook.result.current.handleSubmit(validFormValues)
     })
 
     await waitFor(() => {
@@ -123,13 +125,13 @@ describe('useRegistration', () => {
     expect(hook.result.current.formState.isLoading).toBe(false)
     expect(hook.result.current.formState.isError).toBe(false)
     expect(hook.result.current.formState.error).toBe(null)
-    expect(hook.result.current.formState.formData).toEqual(validFormValues)
+    expect(hook.result.current.formState).toEqual(validFormValues)
   })
 
   it('sets validation error when name is empty', () => {
     act(() => hook.result.current.handleChange('name', ''))
     act(() => {
-      void hook.result.current.handleSubmit()
+      void hook.result.current.handleSubmit({ ...validFormValues, name: '' })
     })
     expect(hook.result.current.formState.isError).toBe(true)
     expect(hook.result.current.formState.error).toContain('Nome é obrigatório')
@@ -150,7 +152,7 @@ describe('useRegistration', () => {
 
     let submitPromise: Promise<void>
     await act(async () => {
-      submitPromise = hook.result.current.handleSubmit()
+      submitPromise = hook.result.current.handleSubmit(validFormValues)
     })
 
     expect(hook.result.current.formState.isLoading).toBe(true)
@@ -172,7 +174,9 @@ describe('useRegistration', () => {
     fillValidThreeStepForm(hook.result)
 
     await act(async () => {
-      await expect(hook.result.current.handleSubmit()).rejects.toThrow('Erro interno do servidor')
+      await expect(hook.result.current.handleSubmit(validFormValues)).rejects.toThrow(
+        'Erro interno do servidor',
+      )
     })
 
     await waitFor(() => {

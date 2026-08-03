@@ -1,14 +1,9 @@
 import { useReducer } from 'react'
-import {
-  applicantFormSchema,
-  type ApplicantFormData,
-  type PartialApplicant,
-} from '../schemas/applicant.schema'
+import { type ApplicantFormData, type PartialApplicant } from '../schemas/applicant.schema'
 import { saveApplicant } from '../services/registration.service'
 import { useMutation } from '@tanstack/react-query'
 
 interface FormState {
-  formData: PartialApplicant
   step: number
   isLoading: boolean
   isError: boolean
@@ -20,7 +15,6 @@ const MIN_STEP = 1
 const MAX_STEP = 3
 
 const initialState: FormState = {
-  formData: {},
   step: 1,
   isLoading: false,
   isError: false,
@@ -35,7 +29,7 @@ type RegistrationAction =
 const registrationReducer = (state: FormState, action: RegistrationAction): FormState => {
   switch (action.type) {
     case 'UPDATE_FIELD':
-      return { ...state, formData: { ...state.formData, ...action.payload } }
+      return { ...state, ...action.payload }
     case 'SUBMIT_START':
       return { ...state, isLoading: true, isError: false, error: null, isSuccess: false }
     case 'NEXT_STEP':
@@ -76,7 +70,6 @@ export const useRegistration = () => {
     dispatch({
       type: 'NEXT_STEP',
       payload: {
-        formData: formState.formData,
         step: formState.step + 1,
         isLoading: formState.isLoading,
         isError: formState.isError,
@@ -91,7 +84,6 @@ export const useRegistration = () => {
     dispatch({
       type: 'PREV_STEP',
       payload: {
-        formData: formState.formData,
         step: formState.step - 1,
         isLoading: formState.isLoading,
         isError: formState.isError,
@@ -105,7 +97,6 @@ export const useRegistration = () => {
     dispatch({
       type: 'RESET',
       payload: {
-        formData: {},
         step: 1,
         isLoading: false,
         isError: false,
@@ -115,29 +106,9 @@ export const useRegistration = () => {
     })
   }
 
-  const handleSubmit = async () => {
-    const result = applicantFormSchema.safeParse(formState.formData)
-    if (!result.success) {
-      dispatch({
-        type: 'SUBMIT_ERROR',
-        payload: {
-          formData: formState.formData,
-          step: formState.step,
-          isLoading: formState.isLoading,
-          isError: true,
-          error: result.error.message,
-          isSuccess: false,
-        },
-      })
-      return
-    }
-
-    dispatch({
-      type: 'SUBMIT_START',
-      payload: formState,
-    })
-
-    await mutation.mutateAsync(result.data)
+  const handleSubmit = async (data: ApplicantFormData) => {
+    dispatch({ type: 'SUBMIT_START', payload: formState })
+    await mutation.mutateAsync(data)
   }
 
   const mutation = useMutation({
@@ -146,7 +117,6 @@ export const useRegistration = () => {
       dispatch({
         type: 'SUBMIT_SUCCESS',
         payload: {
-          formData: formState.formData,
           step: formState.step,
           isLoading: false,
           isError: false,
@@ -159,7 +129,6 @@ export const useRegistration = () => {
       dispatch({
         type: 'SUBMIT_ERROR',
         payload: {
-          formData: formState.formData,
           step: formState.step,
           isLoading: false,
           isError: true,

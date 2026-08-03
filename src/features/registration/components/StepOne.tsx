@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input'
 import { Controller } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
 import type { ApplicantFormData } from '../schemas/applicant.schema'
-import { Link } from 'react-router-dom'
 export const StepOne = ({
   isVisible,
   form,
@@ -42,11 +41,11 @@ export const StepOne = ({
               {...field}
               id="registration-form-gitHub"
               aria-invalid={fieldState.invalid}
-              placeholder="Cole aqui seu link do GitHub"
+              placeholder="https://github.com/seu-usuario"
               autoComplete="off"
             />
             <FieldDescription>
-              O link do seu GitHub é pra que eu já possa te inclur no time. Não tem ainda? Corre e
+              O link do seu GitHub é pra que eu já possa te incluir no time. Não tem ainda? Corre e
               cria uma conta{' '}
               <a href="https://github.com" target="_blank">
                 aqui{' '}
