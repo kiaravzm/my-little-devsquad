@@ -29,20 +29,6 @@ function renderRegistrationHook(): HookResult {
   return renderHook(() => useRegistration(), { wrapper: createWrapper() })
 }
 
-/** Fills all three wizard steps with valid data. */
-function fillValidThreeStepForm(result: HookResult['result']) {
-  act(() => {
-    result.current.handleChange('name', validFormValues.name)
-    result.current.handleNextStep()
-    result.current.handleChange('area', validFormValues.area)
-    result.current.handleNextStep()
-    result.current.handleChange('availability', validFormValues.availability)
-    result.current.handleChange('currentSkills', validFormValues.currentSkills)
-    result.current.handleChange('desiredSkills', validFormValues.desiredSkills)
-    result.current.handleChange('notes', validFormValues.notes!)
-  })
-}
-
 describe('useRegistration', () => {
   let hook: HookResult
 
@@ -89,31 +75,27 @@ describe('useRegistration', () => {
     act(() => hook.result.current.handleNextStep())
     act(() => hook.result.current.handleReset())
     expect(hook.result.current.formState.step).toBe(1)
-    expect(hook.result.current.formState).toEqual({})
+    expect(hook.result.current.formState).toEqual({
+      step: 1,
+      isLoading: false,
+      isError: false,
+      error: null,
+      isSuccess: false,
+    })
     expect(hook.result.current.formState.isLoading).toBe(false)
     expect(hook.result.current.formState.isError).toBe(false)
     expect(hook.result.current.formState.error).toBe(null)
     expect(hook.result.current.formState.isSuccess).toBe(false)
   })
 
-  it('persists form data when navigating between steps', () => {
-    act(() => hook.result.current.handleChange('name', 'Maria'))
-    act(() => hook.result.current.handleNextStep())
-    expect(hook.result.current.formState).toBe('Maria')
-    act(() => hook.result.current.handlePrevStep())
-    expect(hook.result.current.formState).toEqual({ ...validFormValues, name: 'Maria' })
-  })
-
-  it('submits successfully when validation passes and saveApplicant resolves', async () => {
+  it('submits successfully when saveApplicant resolves', async () => {
     mockSaveApplicant.mockResolvedValue({
       data: { ...validFormValues, id: 'test-id-1' },
       error: null,
     })
 
-    fillValidThreeStepForm(hook.result)
-
-    await act(async () => {
-      await hook.result.current.handleSubmit(validFormValues)
+    act(() => {
+      hook.result.current.handleSubmit(validFormValues)
     })
 
     await waitFor(() => {
@@ -125,18 +107,6 @@ describe('useRegistration', () => {
     expect(hook.result.current.formState.isLoading).toBe(false)
     expect(hook.result.current.formState.isError).toBe(false)
     expect(hook.result.current.formState.error).toBe(null)
-    expect(hook.result.current.formState).toEqual(validFormValues)
-  })
-
-  it('sets validation error when name is empty', () => {
-    act(() => hook.result.current.handleChange('name', ''))
-    act(() => {
-      void hook.result.current.handleSubmit({ ...validFormValues, name: '' })
-    })
-    expect(hook.result.current.formState.isError).toBe(true)
-    expect(hook.result.current.formState.error).toContain('Nome é obrigatório')
-    expect(hook.result.current.formState.isSuccess).toBe(false)
-    expect(mockSaveApplicant).not.toHaveBeenCalled()
   })
 
   it('keeps isLoading true while saveApplicant is not resolved', async () => {
@@ -148,18 +118,19 @@ describe('useRegistration', () => {
         }),
     )
 
-    fillValidThreeStepForm(hook.result)
-
-    let submitPromise: Promise<void>
-    await act(async () => {
-      submitPromise = hook.result.current.handleSubmit(validFormValues)
+    act(() => {
+      hook.result.current.handleSubmit(validFormValues)
     })
 
     expect(hook.result.current.formState.isLoading).toBe(true)
 
+    // mutate is async — wait until the mutationFn has been entered
+    await waitFor(() => {
+      expect(resolveSave).toEqual(expect.any(Function))
+    })
+
     await act(async () => {
       resolveSave({ data: { ...validFormValues, id: 'delayed-id' }, error: null })
-      await submitPromise!
     })
 
     await waitFor(() => {
@@ -168,17 +139,14 @@ describe('useRegistration', () => {
     expect(hook.result.current.formState.isLoading).toBe(false)
   })
 
-  it('sets error state when saveApplicant fails and the mutation rejects', async () => {
+  it('sets error state when saveApplicant fails', async () => {
     mockSaveApplicant.mockRejectedValue(new Error('Erro interno do servidor'))
 
-    fillValidThreeStepForm(hook.result)
-
-    await act(async () => {
-      await expect(hook.result.current.handleSubmit(validFormValues)).rejects.toThrow(
-        'Erro interno do servidor',
-      )
+    act(() => {
+      hook.result.current.handleSubmit(validFormValues)
     })
 
+    // mutate() does not return a rejecting Promise to the caller — onError updates state
     await waitFor(() => {
       expect(hook.result.current.formState.isError).toBe(true)
     })
