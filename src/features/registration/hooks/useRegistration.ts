@@ -1,9 +1,9 @@
 import { useReducer } from 'react'
-import { type ApplicantFormData, type PartialApplicant } from '../schemas/applicant.schema'
+import { type ApplicantFormData } from '../schemas/applicant.schema'
 import { saveApplicant } from '../services/registration.service'
 import { useMutation } from '@tanstack/react-query'
 
-interface FormState {
+interface RegistrationState {
   step: number
   isLoading: boolean
   isError: boolean
@@ -14,7 +14,7 @@ interface FormState {
 const MIN_STEP = 1
 const MAX_STEP = 3
 
-const initialState: FormState = {
+const initialState: RegistrationState = {
   step: 1,
   isLoading: false,
   isError: false,
@@ -22,14 +22,16 @@ const initialState: FormState = {
   isSuccess: false,
 }
 
-type RegistrationAction =
-  | { type: 'UPDATE_FIELD'; payload: PartialApplicant }
-  | { type: string; payload: FormState }
+type RegistrationAction = {
+  type: 'SUBMIT_START' | 'NEXT_STEP' | 'PREV_STEP' | 'RESET' | 'SUBMIT_SUCCESS' | 'SUBMIT_ERROR'
+  payload?: RegistrationState
+}
 
-const registrationReducer = (state: FormState, action: RegistrationAction): FormState => {
+const registrationReducer = (
+  state: RegistrationState,
+  action: RegistrationAction,
+): RegistrationState => {
   switch (action.type) {
-    case 'UPDATE_FIELD':
-      return { ...state, ...action.payload }
     case 'SUBMIT_START':
       return { ...state, isLoading: true, isError: false, error: null, isSuccess: false }
     case 'NEXT_STEP':
@@ -45,7 +47,7 @@ const registrationReducer = (state: FormState, action: RegistrationAction): Form
         ...state,
         isLoading: false,
         isError: true,
-        error: action.payload.error,
+        error: action.payload?.error ?? null,
         isSuccess: false,
       }
     default:
@@ -55,60 +57,27 @@ const registrationReducer = (state: FormState, action: RegistrationAction): Form
 export const useRegistration = () => {
   const [formState, dispatch] = useReducer(registrationReducer, initialState)
 
-  const handleChange = <K extends keyof PartialApplicant>(
-    field: K,
-    value: NonNullable<PartialApplicant[K]>,
-  ) => {
-    dispatch({
-      type: 'UPDATE_FIELD',
-      payload: { [field]: value } as PartialApplicant,
-    })
-  }
-
   const handleNextStep = () => {
     if (formState.step >= MAX_STEP) return
-    dispatch({
-      type: 'NEXT_STEP',
-      payload: {
-        step: formState.step + 1,
-        isLoading: formState.isLoading,
-        isError: formState.isError,
-        error: formState.error,
-        isSuccess: formState.isSuccess,
-      },
-    })
+    dispatch({ type: 'NEXT_STEP' })
   }
 
   const handlePrevStep = () => {
     if (formState.step <= MIN_STEP) return
     dispatch({
       type: 'PREV_STEP',
-      payload: {
-        step: formState.step - 1,
-        isLoading: formState.isLoading,
-        isError: formState.isError,
-        error: formState.error,
-        isSuccess: formState.isSuccess,
-      },
     })
   }
 
   const handleReset = () => {
     dispatch({
       type: 'RESET',
-      payload: {
-        step: 1,
-        isLoading: false,
-        isError: false,
-        error: null,
-        isSuccess: false,
-      },
     })
   }
 
-  const handleSubmit = async (data: ApplicantFormData) => {
+  const handleSubmit = (data: ApplicantFormData) => {
     dispatch({ type: 'SUBMIT_START', payload: formState })
-    await mutation.mutateAsync(data)
+    mutation.mutate(data)
   }
 
   const mutation = useMutation({
@@ -117,11 +86,11 @@ export const useRegistration = () => {
       dispatch({
         type: 'SUBMIT_SUCCESS',
         payload: {
+          isSuccess: true,
           step: formState.step,
           isLoading: false,
           isError: false,
           error: null,
-          isSuccess: true,
         },
       })
     },
@@ -129,10 +98,10 @@ export const useRegistration = () => {
       dispatch({
         type: 'SUBMIT_ERROR',
         payload: {
-          step: formState.step,
-          isLoading: false,
           isError: true,
           error: error.message,
+          step: formState.step,
+          isLoading: false,
           isSuccess: false,
         },
       })
@@ -142,7 +111,6 @@ export const useRegistration = () => {
   return {
     formState,
     totalSteps: MAX_STEP,
-    handleChange,
     handleNextStep,
     handlePrevStep,
     handleReset,
