@@ -41,7 +41,7 @@ export const StepThree = ({
             </FieldLabel>
             <Select name={field.name} value={field.value} onValueChange={field.onChange}>
               <SelectTrigger
-                id="form-rhf-select-language"
+                id="registration-form-availability"
                 aria-invalid={fieldState.invalid}
                 className="min-w-[120px]"
               >
@@ -65,7 +65,7 @@ export const StepThree = ({
         control={form.control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="form-rhf-demo-description">
+            <FieldLabel htmlFor="registration-form-notes">
               O que mais você gostaria de compartilhar? Outra skills que você gostaria de aprender?
               Outra skills que você gostaria de ensinar?
             </FieldLabel>

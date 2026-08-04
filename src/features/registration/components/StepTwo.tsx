@@ -46,7 +46,7 @@ export const StepTwo = ({
             </FieldLabel>
             <Select name={field.name} value={field.value} onValueChange={field.onChange}>
               <SelectTrigger
-                id="form-rhf-select-language"
+                id="registration-form-area"
                 aria-invalid={fieldState.invalid}
                 className="min-w-[120px]"
               >
@@ -75,7 +75,7 @@ export const StepTwo = ({
             </FieldLabel>
             <Select name={field.name} value={field.value} onValueChange={field.onChange}>
               <SelectTrigger
-                id="form-rhf-select-language"
+                id="registration-form-experienceLevel"
                 aria-invalid={fieldState.invalid}
                 className="min-w-[120px]"
               >
