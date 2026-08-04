@@ -63,7 +63,7 @@ export const RegistrationForm = () => {
       <StepIndicator currentStep={formState.step} totalSteps={totalSteps} />
       <CardContent>
         <form
-          id="form-rhf-demo"
+          id="registration-form"
           onSubmit={form.handleSubmit((data: ApplicantFormData) => {
             handleSubmit(data)
           })}
@@ -75,7 +75,9 @@ export const RegistrationForm = () => {
       </CardContent>
       {formState.isError && (
         <CardFooter>
-          <p className="text-red-500">{formState.error}</p>
+          <p role="alert" className="text-sm text-destructive">
+            {formState.error}
+          </p>
         </CardFooter>
       )}
       <CardFooter>
@@ -83,11 +85,20 @@ export const RegistrationForm = () => {
           <Actions
             onPrevStep={handlePrevStep}
             onNextStep={handleValidatedNext}
-            onReset={handleReset}
+            onReset={() => {
+              handleReset()
+              form.reset(applicantFormEmptyDefaults)
+            }}
             currentStep={formState.step}
             totalSteps={totalSteps}
+            isLoading={formState.isLoading}
           />
         </Field>
+        {formState.isError && (
+          <p role="alert" className="text-sm text-destructive">
+            {formState.error}
+          </p>
+        )}
       </CardFooter>
     </Card>
   )
