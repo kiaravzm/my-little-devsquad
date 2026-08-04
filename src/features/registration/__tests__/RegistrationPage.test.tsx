@@ -71,7 +71,7 @@ describe('RegistrationPage', () => {
 
     // Success — async (mutation + re-render)
     const successHeading = await screen.findByRole('heading', {
-      name: /enviado com sucesso/i,
+      name: /inscrição enviada com sucesso/i,
     })
     expect(successHeading).toBeInTheDocument()
 
