@@ -1,24 +1,31 @@
 import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { useNavigate } from 'react-router-dom'
 export const RegistrationSuccess = ({ onReset }: { onReset: () => void }) => {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h1 className="text-2xl font-bold">Formulário enviado com sucesso</h1>
-      <p className="text-sm text-gray-500">
-        Obrigado por se inscrever no nosso evento. Em breve você receberá um email com mais
-        informações.
-      </p>
-      <Button
-        onClick={() => {
-          onReset()
-          navigate('/')
-        }}
-        type="button"
-      >
-        Voltar para a página inicial
-      </Button>
-    </div>
+    <Card className="w-full sm:max-w-md">
+      <CardHeader>
+        <CardTitle role="heading" aria-level={1}>
+          Inscrição enviada com sucesso
+        </CardTitle>
+      </CardHeader>
+      <CardDescription>
+        Recebemos seus dados. Vamos analisar seu perfil e, se houver um squad compatível, você será
+        contactada pelo GitHub ou canal combinado.
+      </CardDescription>
+      <CardFooter>
+        <Button
+          onClick={() => {
+            onReset()
+            navigate('/')
+          }}
+          type="button"
+        >
+          Voltar para a página inicial
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
