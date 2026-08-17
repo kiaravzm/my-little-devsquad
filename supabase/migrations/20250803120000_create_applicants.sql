@@ -1,7 +1,7 @@
 -- applicants: public registration form
 -- RLS:
 --   anon + authenticated → INSERT only (anyone can apply)
---   authenticated        → SELECT (admin later; no public listing)
+--   authenticated        → SELECT (admin; no public listing)
 -- App inserts WITHOUT .select() so anon does not need SELECT.
 
 create type public.applicant_area as enum (
